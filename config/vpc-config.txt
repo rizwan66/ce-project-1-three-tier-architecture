@@ -1,0 +1,90 @@
+VPC Configuration
+==================
+Name: three-tier-vpc
+ID: vpc-0b3a78890d76d929f
+CIDR: 10.0.0.0/16
+Region: us-east-1
+DNS Hostnames: Enabled
+DNS Resolution: Enabled
+
+SUBNETS
+=======
+Public Subnets (for ALB and NAT Gateways):
+  public-subnet-1a
+    ID: subnet-0f2c2c205ad0c6114
+    CIDR: 10.0.1.0/24
+    AZ: us-east-1a
+    Auto-assign public IP: Yes
+
+  public-subnet-1b
+    ID: subnet-027d6272b3c87e47f
+    CIDR: 10.0.2.0/24
+    AZ: us-east-1b
+    Auto-assign public IP: Yes
+
+Private App Subnets (for EC2 instances):
+  app-subnet-1a
+    ID: subnet-042c0fb602895edd5
+    CIDR: 10.0.11.0/24
+    AZ: us-east-1a
+    Auto-assign public IP: No
+
+  app-subnet-1b
+    ID: subnet-0a45e3fc7f15c1deb
+    CIDR: 10.0.12.0/24
+    AZ: us-east-1b
+    Auto-assign public IP: No
+
+Private DB Subnets (reserved for RDS):
+  data-subnet-1a
+    ID: subnet-03413425c3f7feebc
+    CIDR: 10.0.21.0/24
+    AZ: us-east-1a
+    Auto-assign public IP: No
+
+  data-subnet-1b
+    ID: subnet-01105bf2a3d36bef4
+    CIDR: 10.0.22.0/24
+    AZ: us-east-1b
+    Auto-assign public IP: No
+
+INTERNET GATEWAY
+================
+ID: (attached to vpc-0b3a78890d76d929f)
+Attached to VPC: Yes
+
+NAT GATEWAYS
+============
+NAT Gateway A (us-east-1a):
+  ID: nat-0b49534b9038efd6d
+  Subnet: public-subnet-1a (subnet-0f2c2c205ad0c6114)
+  Elastic IP: eipalloc-xxx (us-east-1a)
+  State: Available
+
+NAT Gateway B (us-east-1b):
+  ID: nat-05d14582e678dd0ea
+  Subnet: public-subnet-1b (subnet-027d6272b3c87e47f)
+  Elastic IP: eipalloc-08d0cd1cbdd15e9d4
+  State: Available
+
+ROUTE TABLES
+============
+Public Route Table:
+  Routes:
+    10.0.0.0/16 → local
+    0.0.0.0/0   → Internet Gateway
+  Associations: public-subnet-1a, public-subnet-1b
+
+Private Route Table 1a (private-rt-1a):
+  ID: rtb-053910c29016d0af0
+  Routes:
+    10.0.0.0/16 → local
+    0.0.0.0/0   → nat-0b49534b9038efd6d (NAT GW A)
+  Associations: app-subnet-1a, data-subnet-1a
+
+Private Route Table 1b (private-rt-1b):
+  ID: rtb-0d480c7ff027ab054
+  Routes:
+    10.0.0.0/16 → local
+    0.0.0.0/0   → nat-05d14582e678dd0ea (NAT GW B)
+  Associations: app-subnet-1b, data-subnet-1b
