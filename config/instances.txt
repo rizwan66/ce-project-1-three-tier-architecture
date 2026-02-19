@@ -1,0 +1,92 @@
+EC2 Instance Details
+=====================
+Region: us-east-1
+Account: 677746514416
+
+INSTANCE 1: nodejs-app-1a
+==========================
+Instance ID: i-0214d1cc1fc7a0ff9
+Name: nodejs-app-1a
+Instance Type: t3.micro
+  vCPUs: 2
+  RAM: 1 GB
+  Network: Up to 5 Gbps
+  EBS-Optimized: Yes
+AMI: ami-0e349888043265b96 (Amazon Linux 2)
+State: running
+Availability Zone: us-east-1a
+Subnet: app-subnet-1a (subnet-042c0fb602895edd5)
+VPC: vpc-0b3a78890d76d929f
+Private IP: 10.0.11.x
+Public IP: None (private subnet)
+Security Group: app-tier-sg (sg-0b33c7eb3eb59da41)
+IAM Role: None (bootcamp config)
+Key Pair: None
+EBS Volume: 8 GB gp2 (root)
+Hostname: ip-10-0-11-xxx.ec2.internal
+
+Application:
+  Runtime: Node.js 16.x (NodeSource rpm repo)
+  Server: HTTP on port 80
+  Process: nohup node /home/ec2-user/server.js
+  Log: /home/ec2-user/server.log
+  Endpoints:
+    GET / → HTML page with instance info
+    GET /health → JSON health status
+
+Target Group Membership:
+  app-tier-tg (port 80) → Status: healthy
+
+INSTANCE 2: nodejs-app-1b
+==========================
+Instance ID: i-0662d3f1b85d5e951
+Name: nodejs-app-1b
+Instance Type: t3.micro
+  vCPUs: 2
+  RAM: 1 GB
+  Network: Up to 5 Gbps
+  EBS-Optimized: Yes
+AMI: ami-0e349888043265b96 (Amazon Linux 2)
+State: running
+Availability Zone: us-east-1b
+Subnet: app-subnet-1b (subnet-0a45e3fc7f15c1deb)
+VPC: vpc-0b3a78890d76d929f
+Private IP: 10.0.12.x
+Public IP: None (private subnet)
+Security Group: app-tier-sg (sg-0b33c7eb3eb59da41)
+IAM Role: None (bootcamp config)
+Key Pair: None
+EBS Volume: 8 GB gp2 (root)
+Hostname: ip-10-0-12-xxx.ec2.internal
+
+Application:
+  Runtime: Node.js 16.x (NodeSource rpm repo)
+  Server: HTTP on port 80
+  Process: nohup node /home/ec2-user/server.js
+  Log: /home/ec2-user/server.log
+  Endpoints:
+    GET / → HTML page with instance info
+    GET /health → JSON health status
+
+Target Group Membership:
+  app-tier-tg (port 80) → Status: healthy
+
+USER DATA SCRIPT SUMMARY
+=========================
+See app/userdata.sh for full script.
+
+Key steps performed at launch:
+1. yum update -y
+2. curl -sL https://rpm.nodesource.com/setup_16.x | bash -
+3. yum install -y nodejs
+4. Retrieve INSTANCE_ID and AZ from EC2 metadata service
+5. Write /home/ec2-user/server.js
+6. nohup node server.js > server.log 2>&1 &
+
+NODE.JS VERSION NOTE
+====================
+Node.js 18.x is NOT compatible with Amazon Linux 2 due to glibc requirement:
+  Node 18 requires: glibc >= 2.28
+  Amazon Linux 2 provides: glibc 2.17
+
+Node.js 16.x (LTS) is fully compatible and was used instead.
