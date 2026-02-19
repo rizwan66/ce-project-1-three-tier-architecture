@@ -1,0 +1,69 @@
+Security Groups Configuration
+==============================
+Region: us-east-1
+VPC: vpc-0b3a78890d76d929f (three-tier-vpc)
+
+SECURITY GROUP 1: ALB Security Group
+=====================================
+Name: alb-sg
+ID: sg-0a9ada4856d63eeac
+Description: Security group for Application Load Balancer
+VPC: vpc-0b3a78890d76d929f
+
+Inbound Rules:
+  Type     Protocol  Port  Source          Description
+  -------  --------  ----  --------------  -----------------------
+  HTTP     TCP       80    0.0.0.0/0       Allow HTTP from internet
+  HTTP     TCP       80    ::/0            Allow HTTP from internet (IPv6)
+  HTTPS    TCP       443   0.0.0.0/0       Allow HTTPS from internet
+  HTTPS    TCP       443   ::/0            Allow HTTPS from internet (IPv6)
+
+Outbound Rules:
+  Type     Protocol  Port  Destination     Description
+  -------  --------  ----  --------------  -----------------------
+  All      All       All   0.0.0.0/0       Allow all outbound
+
+SECURITY GROUP 2: App Tier Security Group
+==========================================
+Name: app-tier-sg
+ID: sg-0b33c7eb3eb59da41
+Description: Security group for EC2 app instances
+VPC: vpc-0b3a78890d76d929f
+
+Inbound Rules:
+  Type     Protocol  Port  Source                     Description
+  -------  --------  ----  -------------------------  ---------------------------
+  HTTP     TCP       80    sg-0a9ada4856d63eeac       Allow HTTP from ALB only
+  HTTPS    TCP       443   sg-0a9ada4856d63eeac       Allow HTTPS from ALB only
+
+Outbound Rules:
+  Type     Protocol  Port  Destination     Description
+  -------  --------  ----  --------------  -----------------------
+  All      All       All   0.0.0.0/0       Allow all outbound (for yum updates via NAT)
+
+SECURITY GROUP 3: Data Tier Security Group
+===========================================
+Name: data-tier-sg
+ID: sg-0259278f9204809eb
+Description: Security group for DB instances
+VPC: vpc-0b3a78890d76d929f
+
+Inbound Rules:
+  Type        Protocol  Port  Source                     Description
+  ----------  --------  ----  -------------------------  ---------------------------
+  MySQL/Aurora TCP      3306  sg-0b33c7eb3eb59da41       Allow MySQL from App tier
+  PostgreSQL  TCP       5432  sg-0b33c7eb3eb59da41       Allow Postgres from App tier
+
+Outbound Rules:
+  Type     Protocol  Port  Destination     Description
+  -------  --------  ----  --------------  -----------------------
+  All      All       All   0.0.0.0/0       Allow all outbound
+
+SECURITY MODEL SUMMARY
+======================
+Internet → (port 80/443) → ALB-SG
+ALB-SG  → (port 80/443) → App-SG
+App-SG  → (port 3306/5432) → DB-SG
+
+No direct internet access to App or DB tiers.
+No SSH (port 22) exposed anywhere.
