@@ -1,0 +1,61 @@
+Application Load Balancer Configuration
+========================================
+Name: three-tier-alb
+ARN: arn:aws:elasticloadbalancing:us-east-1:677746514416:loadbalancer/app/three-tier-alb/61169483...
+DNS Name: three-tier-alb-61169483.us-east-1.elb.amazonaws.com
+Canonical Hosted Zone ID: Z35SXDOTRQ7X7K
+Type: application
+Scheme: internet-facing
+IP Address Type: ipv4
+State: active
+Created: 2026
+
+AVAILABILITY ZONES
+==================
+  us-east-1a → public-subnet-1a (subnet-0f2c2c205ad0c6114)
+  us-east-1b → public-subnet-1b (subnet-027d6272b3c87e47f)
+
+SECURITY GROUPS
+===============
+  sg-0a9ada4856d63eeac (alb-sg)
+
+LISTENERS
+=========
+Listener 1:
+  Port: 80
+  Protocol: HTTP
+  Default Action: forward → app-tier-tg
+  Rules:
+    - Default: Forward to app-tier-tg
+
+TARGET GROUP
+============
+Name: app-tier-tg
+ARN: arn:aws:elasticloadbalancing:us-east-1:677746514416:targetgroup/app-tier-tg/7045efef0d77780c
+Protocol: HTTP
+Port: 80
+Target Type: instance
+VPC: vpc-0b3a78890d76d929f
+
+Health Check Configuration:
+  Protocol: HTTP
+  Path: /health
+  Port: traffic-port (80)
+  Healthy Threshold: 2
+  Unhealthy Threshold: 3
+  Timeout: 5 seconds
+  Interval: 30 seconds
+  Success Codes: 200
+
+Registered Targets (as of deployment):
+  i-0214d1cc1fc7a0ff9 (nodejs-app-1a) → Port 80 → Status: healthy
+  i-0662d3f1b85d5e951 (nodejs-app-1b) → Port 80 → Status: healthy
+
+LOAD BALANCER ATTRIBUTES
+=========================
+  Access logs: disabled (enable for production)
+  Deletion protection: disabled
+  Idle timeout: 60 seconds
+  Cross-zone load balancing: enabled
+  HTTP/2: enabled
+  WAF: not attached
